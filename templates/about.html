@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogLite - About</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bx bx-search-alt"></i> LogLite
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/"><i class="bx bx-home"></i> Home</a>
+                    <a class="nav-link" href="/dashboard"><i class="bx bx-dashboard"></i> Dashboard</a>
+                    <a class="nav-link" href="/upload"><i class="bx bx-upload"></i> Upload</a>
+                    <a class="nav-link" href="/help"><i class="bx bx-help-circle"></i> Help</a>
+                    <a class="nav-link active" href="/about"><i class="bx bx-info-circle"></i> About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bx bx-info-circle"></i> About LogLite</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <h4>LogLite: A Lightweight Framework for Real-Time Anomaly Detection and Analysis of System Logs</h4>
+                                <p class="lead">Detecting and diagnosing system anomalies with AI-powered log analysis</p>
+                                <hr>
+                                <p>LogLite is a research project focused on developing a lightweight, efficient framework for real-time detection and analysis of anomalies in system logs. By leveraging modern deep learning techniques and explainable AI, LogLite identifies potential issues and provides clear, actionable insights.</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="p-3 bg-light rounded">
+                                    <i class="bx bx-search-alt text-primary" style="font-size: 5rem;"></i>
+                                    <h5 class="mt-2">LogLite</h5>
+                                    <p class="text-muted">Version 1.0</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h5>Key Features</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="bx bx-analyse text-primary"></i> Anomaly Detection</h6>
+                                                <p>Automatic identification of anomalous system logs using DistilBERT, a state-of-the-art transformer model.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="bx bx-bulb text-primary"></i> Explainable AI</h6>
+                                                <p>Using SHAP (SHapley Additive exPlanations) to provide transparent explanations of model predictions.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="bx bx-line-chart text-primary"></i> Interactive Dashboard</h6>
+                                                <p>Visualize system health and anomaly distributions with an intuitive, responsive interface.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="bx bx-wrench text-primary"></i> Root Cause Analysis</h6>
+                                                <p>Identification of potential causes behind detected anomalies and recommended actions.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h5>Technology Stack</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Component</th>
+                                                <th>Technology</th>
+                                                <th>Purpose</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Backend Framework</td>
+                                                <td>Flask (Python)</td>
+                                                <td>Web application server and API endpoints</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Machine Learning Model</td>
+                                                <td>DistilBERT (Transformers)</td>
+                                                <td>Log classification and anomaly detection</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Model Explainability</td>
+                                                <td>SHAP</td>
+                                                <td>Explaining model predictions</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Frontend</td>
+                                                <td>HTML5, CSS3, JavaScript</td>
+                                                <td>User interface and interactive visualizations</td>
+                                            </tr>
+                                            <tr>
+                                                <td>UI Framework</td>
+                                                <td>Bootstrap 5</td>
+                                                <td>Responsive design and components</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Visualization</td>
+                                                <td>Chart.js</td>
+                                                <td>Interactive data visualization</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>Training Dataset</h5>
+                                <p>LogLite's model was trained on the BGL (Blue Gene/L) supercomputer logs dataset, which contains labeled system logs from a large-scale supercomputing system. This dataset includes a diverse range of system events, errors, and anomalies, providing an excellent foundation for training a robust log analysis model.</p>
+                                <div class="alert alert-info">
+                                    <i class="bx bx-info-circle"></i> The model classifies logs into normal operation or various types of kernel anomalies including memory issues, I/O problems, database errors, and critical system failures.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-4 py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">LogLite &copy; 2025 - A Lightweight Framework for Real-Time Anomaly Detection and Analysis of System Logs</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogLite - Log Anomaly Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bx bx-search-alt bx-tada"></i> LogLite
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link active" href="/"><i class="bx bx-home"></i> Home</a>
+                    <a class="nav-link" href="/dashboard"><i class="bx bx-dashboard"></i> Dashboard</a>
+                    <a class="nav-link" href="/upload"><i class="bx bx-upload"></i> Upload</a>
+                    <a class="nav-link" href="/help"><i class="bx bx-help-circle"></i> Help</a>
+                    <a class="nav-link" href="/about"><i class="bx bx-info-circle"></i> About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Hero Banner -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body text-center py-5" style="background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(58, 12, 163, 0.1));">
+                        <h1 class="display-4 fw-bold mb-3">
+                            <i class="bx bx-search-alt bx-flashing text-primary"></i> LogLite
+                        </h1>
+                        <p class="lead mb-4">Advanced System Log Anomaly Detection</p>
+                        <div class="d-flex justify-content-center">
+                            <span class="badge rounded-pill bg-primary mx-1">AI-Powered Analysis</span>
+                            <span class="badge rounded-pill bg-info mx-1">Real-time Detection</span>
+                            <span class="badge rounded-pill bg-success mx-1">Actionable Insights</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bx bx-upload"></i> Submit Logs for Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="inputTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ 'active' if active_tab != 'text' and active_tab != 'dashboard' else '' }}" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="{{ 'true' if active_tab != 'text' and active_tab != 'dashboard' else 'false' }}">
+                                    <i class="bx bx-file me-1"></i> Upload Log File
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ 'active' if active_tab == 'text' else '' }}" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button" role="tab" aria-controls="text" aria-selected="{{ 'true' if active_tab == 'text' else 'false' }}">
+                                    <i class="bx bx-text me-1"></i> Enter Log Text
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="sample-tab" data-bs-toggle="tab" data-bs-target="#sample" type="button" role="tab" aria-controls="sample">
+                                    <i class="bx bx-list-ul me-1"></i> Sample Logs
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ 'active' if active_tab == 'dashboard' else '' }}" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="{{ 'true' if active_tab == 'dashboard' else 'false' }}">
+                                    <i class="bx bx-dashboard me-1"></i> Dashboard
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content mt-4" id="inputTabContent">
+                            <!-- Upload File Tab -->
+                            <div class="tab-pane fade {{ 'show active' if active_tab != 'text' and active_tab != 'dashboard' else '' }}" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                                <form id="fileForm" enctype="multipart/form-data">
+                                    <div class="mb-4">
+                                        <div class="file-upload-container p-5 text-center rounded" style="border: 2px dashed #ccc; background-color: #f8f9fa;">
+                                            <i class="bx bx-cloud-upload text-primary" style="font-size: 48px;"></i>
+                                            <h5 class="mt-3 mb-3">Drag and drop log files here</h5>
+                                            <p class="text-muted mb-3">or</p>
+                                            <label for="logFile" class="btn btn-primary px-4">
+                                                <i class="bx bx-file me-2"></i> Browse Files
+                                            </label>
+                                            <input type="file" class="d-none" id="logFile" name="log_file" accept=".log,.txt">
+                                            <p class="text-muted mt-3 mb-0"><small>Supported formats: .log, .txt</small></p>
+                                            <div id="selectedFileName" class="mt-2 text-primary fw-bold"></div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary px-4 py-2">
+                                            <i class="bx bx-analyse me-2"></i> Analyze Logs
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Text Input Tab -->
+                            <div class="tab-pane fade {{ 'show active' if active_tab == 'text' else '' }}" id="text" role="tabpanel" aria-labelledby="text-tab">
+                                <form id="textForm">
+                                    <div class="mb-4">
+                                        <label for="logText" class="form-label">Enter log text:</label>
+                                        <textarea class="form-control log-content" id="logText" name="log_text" rows="8" placeholder="Enter one or more log lines..."></textarea>
+                                        <div class="form-text">Each line will be analyzed as a separate log entry.</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary px-4 py-2">
+                                            <i class="bx bx-analyse me-2"></i> Analyze Text
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Sample Logs Tab -->
+                            <div class="tab-pane fade" id="sample" role="tabpanel" aria-labelledby="sample-tab">
+                                <div class="mb-4">
+                                    <h6 class="mb-3">Sample log entries for testing:</h6>
+                                    <div class="sample-logs">
+                                        <div class="sample-log-item p-3 mb-2 bg-light rounded">
+                                            <pre class="mb-0">kernel: CPU3: Core temperature above threshold, cpu clock throttled</pre>
+                                            <button class="btn btn-sm btn-primary mt-2" onclick="useThisSample(this)">Use This Sample</button>
+                                        </div>
+                                        <div class="sample-log-item p-3 mb-2 bg-light rounded">
+                                            <pre class="mb-0">kernel: Memory allocation failure: Unable to allocate memory</pre>
+                                            <button class="btn btn-sm btn-primary mt-2" onclick="useThisSample(this)">Use This Sample</button>
+                                        </div>
+                                        <div class="sample-log-item p-3 mb-2 bg-light rounded">
+                                            <pre class="mb-0">kernel: INFO: task httpd:1234 blocked for more than 120 seconds</pre>
+                                            <button class="btn btn-sm btn-primary mt-2" onclick="useThisSample(this)">Use This Sample</button>
+                                        </div>
+                                        <div class="sample-log-item p-3 mb-2 bg-light rounded">
+                                            <pre class="mb-0">kernel: BUG: unable to handle kernel NULL pointer dereference at 0000000000000000</pre>
+                                            <button class="btn btn-sm btn-primary mt-2" onclick="useThisSample(this)">Use This Sample</button>
+                                        </div>
+                                        <div class="sample-log-item p-3 mb-2 bg-light rounded">
+                                            <pre class="mb-0">kernel: Buffer I/O error on dev sda, logical block 12345, lost async page write</pre>
+                                            <button class="btn btn-sm btn-primary mt-2" onclick="useThisSample(this)">Use This Sample</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-primary px-4 py-2" onclick="analyzeAllSamples()">
+                                        <i class="bx bx-analyse me-2"></i> Analyze All Samples
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Dashboard Tab -->
+                            <div class="tab-pane fade {{ 'show active' if active_tab == 'dashboard' else '' }}" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                                <div class="row">
+                                    <div class="col-md-12 mb-4">
+                                        <h5 class="mb-3">System Health Overview</h5>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="dashboard-stat-card">
+                                                    <div class="stat-title">Total Logs Analyzed</div>
+                                                    <p class="stat-value" id="dashTotalLogs">0</p>
+                                                    <p class="stat-trend"><i class="bx bx-trending-up"></i> Last 24h</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="dashboard-stat-card">
+                                                    <div class="stat-title">Anomalies Detected</div>
+                                                    <p class="stat-value text-danger" id="dashAnomalies">0</p>
+                                                    <p class="stat-trend trend-up"><i class="bx bx-up-arrow-alt"></i> +5% from yesterday</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="dashboard-stat-card">
+                                                    <div class="stat-title">Critical Issues</div>
+                                                    <p class="stat-value text-warning" id="dashCritical">0</p>
+                                                    <p class="stat-trend trend-down"><i class="bx bx-down-arrow-alt"></i> -2% from yesterday</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="dashboard-stat-card">
+                                                    <div class="stat-title">Average Health Score</div>
+                                                    <p class="stat-value text-success" id="dashHealthScore">95%</p>
+                                                    <p class="stat-trend trend-up"><i class="bx bx-up-arrow-alt"></i> +3% from yesterday</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card mb-4">
+                                            <div class="card-header bg-primary text-white">
+                                                <h5 class="mb-0"><i class="bx bx-chart"></i> Anomaly Distribution</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container" style="height: 300px;">
+                                                    <canvas id="dashboardAnomalyChart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card mb-4">
+                                            <div class="card-header bg-primary text-white">
+                                                <h5 class="mb-0"><i class="bx bx-line-chart"></i> Severity Trend</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container" style="height: 300px;">
+                                                    <canvas id="dashboardSeverityChart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header bg-primary text-white">
+                                                <h5 class="mb-0"><i class="bx bx-table"></i> Recent Anomalies</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Timestamp</th>
+                                                                <th>Log</th>
+                                                                <th>Severity</th>
+                                                                <th>Component</th>
+                                                                <th>Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="dashboardRecentTable">
+                                                            <tr>
+                                                                <td>2023-08-15 14:25:33</td>
+                                                                <td>kernel: Memory allocation failure: Unable to allocate memory</td>
+                                                                <td><span class="badge badge-severity-high">High</span></td>
+                                                                <td><span class="component-badge component-memory">memory</span></td>
+                                                                <td><button class="btn btn-sm btn-details">Details</button></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>2023-08-15 14:22:18</td>
+                                                                <td>kernel: BUG: unable to handle kernel NULL pointer dereference at 0000000000000000</td>
+                                                                <td><span class="badge badge-severity-critical">Critical</span></td>
+                                                                <td><span class="component-badge component-system">system</span></td>
+                                                                <td><button class="btn btn-sm btn-details">Details</button></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>2023-08-15 14:18:45</td>
+                                                                <td>kernel: Buffer I/O error on dev sda, logical block 12345, lost async page write</td>
+                                                                <td><span class="badge badge-severity-medium">Medium</span></td>
+                                                                <td><span class="component-badge component-storage">storage</span></td>
+                                                                <td><button class="btn btn-sm btn-details">Details</button></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section (initially hidden) -->
+        <div class="row mt-4 d-none" id="resultsSection">
+            <!-- Dashboard Stats -->
+            <div class="col-md-12 mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="dashboard-stat-card">
+                            <div class="stat-title">Total Logs</div>
+                            <p class="stat-value" id="totalLogsCount">0</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="dashboard-stat-card">
+                            <div class="stat-title">Normal Logs</div>
+                            <p class="stat-value text-success" id="normalLogsCount">0</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="dashboard-stat-card">
+                            <div class="stat-title">Anomalies</div>
+                            <p class="stat-value text-danger" id="anomalyCount">0</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="dashboard-stat-card">
+                            <div class="stat-title">Anomaly Rate</div>
+                            <p class="stat-value text-warning" id="anomalyRate">0%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Results Card -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bx bx-line-chart"></i> Analysis Results</h5>
+                        <div>
+                            <span class="badge rounded-pill pulse" id="healthBadge">System Health</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <div class="health-indicator mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h5>System Health Score</h5>
+                                        <h5 id="healthScore" class="mb-0">100%</h5>
+                                    </div>
+                                    <div class="progress">
+                                        <div id="healthProgress" class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <div id="healthStatus" class="alert alert-success">
+                                    <div class="d-flex">
+                                        <div class="me-3">
+                                            <i class="bx bx-check-circle bx-md"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="alert-heading">System Status</h5>
+                                            <p id="healthStatusText" class="mb-0">STABLE</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="chart-container">
+                                    <canvas id="anomalyPieChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3">Log Analysis Results:</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="resultsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="40%">Log</th>
+                                        <th width="20%">Prediction</th>
+                                        <th width="20%">Confidence</th>
+                                        <th width="20%">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsBody">
+                                    <!-- Results will be inserted here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal for log details -->
+        <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailsModalLabel">
+                            <i class="bx bx-info-circle me-2"></i> Log Analysis Details
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card mb-4">
+                            <div class="card-header">Log Entry</div>
+                            <div class="card-body">
+                                <pre id="modalLog" class="log-content"></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>Prediction</span>
+                                        <span class="badge" id="modalConfidence">98.2%</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 id="modalPrediction" class="mb-3">NORMAL</h4>
+                                        <div id="modalTopClassifications">
+                                            <!-- Top classifications will be inserted here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">Affected Components</div>
+                                    <div class="card-body">
+                                        <div id="modalComponents">
+                                            <!-- Components will be inserted here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card mb-4">
+                                    <div class="card-header">Key Indicators</div>
+                                    <div class="card-body">
+                                        <div id="modalIndicators">
+                                            <!-- Indicators will be inserted here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header">Root Cause Analysis</div>
+                            <div class="card-body">
+                                <p id="modalRootCause" class="mb-0">No anomaly detected.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">Recommended Action</div>
+                            <div class="card-body">
+                                <p id="modalRecommendation" class="mb-0">No action needed - log indicates normal operation.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-4 py-3">
+        <div class="container text-center">
+            <span class="text-muted">LogLite &copy; 2025 - A Lightweight Framework for Real-Time Anomaly Detection and Analysis of System Logs</span>
+        </div>
+    </footer>
+
+    <script>
+        // File input enhancement
+        document.getElementById('logFile').addEventListener('change', function() {
+            const fileName = this.files[0]?.name || '';
+            document.getElementById('selectedFileName').textContent = fileName;
+        });
+        
+        // Sample logs functionality
+        function useThisSample(button) {
+            const logText = button.previousElementSibling.textContent;
+            document.getElementById('logText').value = logText;
+            document.getElementById('text-tab').click();
+        }
+        
+        function analyzeAllSamples() {
+            const samples = Array.from(document.querySelectorAll('.sample-log-item pre'))
+                .map(pre => pre.textContent)
+                .join('\n');
+                
+            document.getElementById('logText').value = samples;
+            document.getElementById('text-tab').click();
+            document.getElementById('textForm').dispatchEvent(new Event('submit'));
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 
